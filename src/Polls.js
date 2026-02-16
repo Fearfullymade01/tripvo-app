@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 const USER_ID = "demo-user"; // Replace with real user ID in production
+const BACKEND_URL =
+    process.env.REACT_APP_BACKEND_URL ||
+    "https://tripvo-backend-99eabd966d03.herokuapp.com";
 
 function Polls({ backendUrl }) {
     const [polls, setPolls] = useState([]);
@@ -9,12 +12,12 @@ function Polls({ backendUrl }) {
     const [ws, setWs] = useState(null);
 
     useEffect(() => {
-        fetch(`${backendUrl}/polls`)
+        fetch(`${BACKEND_URL}/polls`)
             .then((res) => res.json())
             .then((data) => setPolls(data));
         // WebSocket for real-time updates
         const socket = new window.WebSocket(
-            `${backendUrl.replace("https://", "wss://")}/ws/polls/global`,
+            `${BACKEND_URL.replace("https://", "wss://")}/ws/polls/global`,
         );
         socket.onmessage = (event) => {
             const msg = JSON.parse(event.data);
@@ -29,11 +32,11 @@ function Polls({ backendUrl }) {
         };
         setWs(socket);
         return () => socket.close();
-    }, [backendUrl]);
+    }, []);
 
     const createPoll = (e) => {
         e.preventDefault();
-        fetch(`${backendUrl}/polls`, {
+        fetch(`${BACKEND_URL}/polls`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -46,7 +49,7 @@ function Polls({ backendUrl }) {
     };
 
     const votePoll = (pollId, optionId) => {
-        fetch(`${backendUrl}/polls/${pollId}/vote`, {
+        fetch(`${BACKEND_URL}/polls/${pollId}/vote`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_id: USER_ID, option_id: optionId }),
