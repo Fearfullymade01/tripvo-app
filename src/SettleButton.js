@@ -21,9 +21,7 @@ export default function SettleButton({
         try {
             await axiosInstance.post(
                 `${BACKEND_URL}/api/expenses/${expenseId}/settle/`,
-                {}
-            );
-                },
+                {},
             );
             if (onSettled) onSettled();
         } catch (err) {
