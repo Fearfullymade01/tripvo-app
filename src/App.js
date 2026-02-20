@@ -130,7 +130,44 @@ function App() {
         }
     };
 
-    return <div>Test Render</div>;
+    return (
+        <div>
+            {!authenticated ? (
+                <Login onAuth={() => setAuthenticated(true)} />
+            ) : !onboarded ? (
+                <Onboarding onComplete={() => setOnboarded(true)} />
+            ) : (
+                <DashboardView members={members} />
+            )}
+            <ItineraryList
+                itinerary={itinerary}
+                onComment={handleComment}
+                members={members}
+            />
+            <AiAssistPanel
+                suggestions={aiSuggestions}
+                loading={aiLoading}
+                error={aiError}
+                fetchSuggestions={fetchAiSuggestions}
+            />
+            <Polls planId={PLAN_ID} backendUrl={BACKEND_URL} />
+            <ExpenseEntry
+                planId={PLAN_ID}
+                backendUrl={BACKEND_URL}
+                onChange={() => setExpensesChanged(true)}
+            />
+            <ExpenseList
+                planId={PLAN_ID}
+                backendUrl={BACKEND_URL}
+                expensesChanged={expensesChanged}
+                setExpensesChanged={setExpensesChanged}
+            />
+            <Chat planId={PLAN_ID} backendUrl={BACKEND_URL} />
+            <NotificationSettings />
+            <PushNotificationRegister />
+            <ProfileSettings />
+        </div>
+    );
 }
 
 export default App;
