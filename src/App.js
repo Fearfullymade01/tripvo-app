@@ -140,7 +140,7 @@ function App() {
                 <DashboardView members={members} />
             )}
             <ItineraryList
-                itinerary={itinerary}
+                items={itinerary}
                 onComment={handleComment}
                 members={members}
             />
