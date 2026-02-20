@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import axiosInstance from "./axios";
 const BACKEND_URL =
     process.env.REACT_APP_BACKEND_URL ||
     "https://tripvo-backend-99eabd966d03.herokuapp.com";
@@ -19,10 +19,10 @@ export default function SettleButton({
         setLoading(true);
         setError("");
         try {
-            await axios.post(
+            await axiosInstance.post(
                 `${BACKEND_URL}/api/expenses/${expenseId}/settle/`,
-                {
-                    member: memberId,
+                {}
+            );
                 },
             );
             if (onSettled) onSettled();

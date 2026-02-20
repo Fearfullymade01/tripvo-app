@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "./axios";
 const BACKEND_URL =
     process.env.REACT_APP_BACKEND_URL ||
     "https://tripvo-backend-99eabd966d03.herokuapp.com";
@@ -15,7 +15,7 @@ export default function ExpenseList({ planId }) {
     const fetchExpenses = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(
+            const res = await axiosInstance.get(
                 `${BACKEND_URL}/api/expenses/?plan=${planId}`,
             );
             setExpenses(res.data);

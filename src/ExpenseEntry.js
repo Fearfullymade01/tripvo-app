@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from "./axios";
 const BACKEND_URL =
     process.env.REACT_APP_BACKEND_URL ||
     "https://tripvo-backend-99eabd966d03.herokuapp.com";
@@ -55,7 +55,7 @@ export default function ExpenseEntry({ planId, members, onExpenseAdded }) {
                     amount: s.amount,
                 }));
             }
-            await axios.post(`${BACKEND_URL}/api/expenses/`, data);
+            await axiosInstance.post(`${BACKEND_URL}/api/expenses/`, data);
             setDescription("");
             setAmount("");
             setCategory("other");
