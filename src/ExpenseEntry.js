@@ -129,13 +129,20 @@ export default function ExpenseEntry({ planId, members, onExpenseAdded }) {
                         required
                     >
                         <option value="">Select</option>
-                        {members.map((m) => (
-                            <option key={m.id} value={m.user || m.guest_email}>
-                                {m.member_name ||
-                                    m.user_info?.username ||
-                                    m.guest_email}
-                            </option>
-                        ))}
+                        {Array.isArray(members) && members.length > 0 ? (
+                            members.map((m) => (
+                                <option
+                                    key={m.id}
+                                    value={m.user || m.guest_email}
+                                >
+                                    {m.member_name ||
+                                        m.user_info?.username ||
+                                        m.guest_email}
+                                </option>
+                            ))
+                        ) : (
+                            <option disabled>No members found</option>
+                        )}
                     </select>
                 </label>
             </div>

@@ -10,6 +10,8 @@ import NotificationSettings from "./NotificationSettings";
 import PushNotificationRegister from "./PushNotificationRegister";
 import DashboardView from "./DashboardView";
 import Login from "./Login";
+import Onboarding from "./Onboarding";
+import ProfileSettings from "./ProfileSettings";
 
 const PLAN_ID = "d23c595d-eb7e-457d-9c85-0f2dea9af547"; // London plan
 const BACKEND_URL =
@@ -17,6 +19,9 @@ const BACKEND_URL =
 
 function App() {
     const [authenticated, setAuthenticated] = useState(false);
+    const [onboarded, setOnboarded] = useState(() => {
+        return localStorage.getItem("onboarded") === "true";
+    });
     const [itinerary, setItinerary] = useState(() => {
         const saved = localStorage.getItem("itinerary_" + PLAN_ID);
         return saved ? JSON.parse(saved) : [];
@@ -42,8 +47,17 @@ function App() {
                     preferences: "sightseeing, food, culture",
                 }),
             });
-            const data = await res.json();
-            setAiSuggestions(data.suggestions || []);
+            let data;
+            try {
+                data = await res.json();
+            } catch (jsonErr) {
+                setAiError("Invalid response from server");
+                setAiSuggestions([]);
+                return;
+            }
+            setAiSuggestions(
+                Array.isArray(data.suggestions) ? data.suggestions : [],
+            );
         } catch (err) {
             setAiError("Failed to fetch AI suggestions");
         } finally {
@@ -76,8 +90,18 @@ function App() {
 
     useEffect(() => {
         fetch(`${BACKEND_URL}/api/plans/${PLAN_ID}/members/`)
-            .then((res) => res.json())
-            .then((data) => setMembers(data));
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to fetch members");
+                return res.json();
+            })
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setMembers(data);
+                } else {
+                    setMembers([]);
+                }
+            })
+            .catch(() => setMembers([]));
     }, []);
 
     const handleComment = (itemId, comment) => {
@@ -106,40 +130,7 @@ function App() {
         }
     };
 
-    if (!authenticated) {
-        return <Login onLogin={() => setAuthenticated(true)} />;
-    }
-
-    return (
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: 24 }}>
-            <h1>Tripvo Group Planning</h1>
-            <DashboardView />
-            <AiAssistPanel
-                suggestions={aiSuggestions}
-                onAccept={(s) => fetchAiSuggestions()}
-                onReject={(s) =>
-                    setAiSuggestions(aiSuggestions.filter((x) => x !== s))
-                }
-                onFeedback={(s, feedback) => {
-                    /* Optionally send feedback to backend */
-                }}
-            />
-            {aiLoading && <div>Loading AI suggestions...</div>}
-            {aiError && <div style={{ color: "red" }}>{aiError}</div>}
-            <ExpenseEntry
-                planId={PLAN_ID}
-                members={members}
-                onExpenseAdded={() => setExpensesChanged((x) => !x)}
-            />
-            <ExpenseList planId={PLAN_ID} key={expensesChanged} />
-            <ItineraryList items={itinerary} onComment={handleComment} />
-            <Chat planId={PLAN_ID} user={"DemoUser"} />
-            <Polls backendUrl={BACKEND_URL} />
-            <NotificationSettings userId={null} />
-            <PushNotificationRegister userId={null} />
-            {/* TODO: Add calendar view, offline sync, and real-time logic */}
-        </div>
-    );
+    return <div>Test Render</div>;
 }
 
 export default App;
